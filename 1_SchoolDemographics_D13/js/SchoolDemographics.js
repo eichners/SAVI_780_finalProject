@@ -341,7 +341,7 @@ function updatePie2(feature) { //passes in one feature from data set
     // set up dataset
 
 // ARRAY: 4 categories, all with same keys; labels: .... values: .... 
-    var d3_dataset = [{"label":"Free lunch" + "%: ", "value":feature.properties.PercFreeLunch}]; 
+    var d3_dataset2 = [{"label":"Free lunch" + "%: ", "value":feature.properties.PercFreeLunch}]; 
 
     // set width and height of drawing
     var width = $('.col-sm-4').width(), 
@@ -369,7 +369,7 @@ function updatePie2(feature) { //passes in one feature from data set
         .value(function(d) { console.log(d); return d.value; }); // what value do we want to use? 
         // we created function with label and value so we'll pass that through an anonymous functino to pull out that d value
 
-    var svg = d3.select("#d3vis") // selects and creates svg container 
+    var svg2 = d3.select("#d3vis2") // selects and creates svg container 
                 .append("svg")
                 .attr("width", width) // set width and ht
                 .attr("height", height) //explicitly sets them to be =
@@ -377,19 +377,19 @@ function updatePie2(feature) { //passes in one feature from data set
                 .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")"); 
                 // if you don't do this must figure out a way to draw pie chart in center of container
 
-    var g = svg.selectAll(".arc") // select all class = arc elements
-               .data(pie(d3_dataset)) // loading data run through pie function so certain attributes will come out of it 
+    var g2 = svg2.selectAll(".arc") // select all class = arc elements
+               .data(pie2(d3_dataset2)) // loading data run through pie function so certain attributes will come out of it 
                .enter() // binding the dataset defined above but also info about how wide, radius, etc. 
                .append("g") 
                .attr("class", "arc"); // classed them as arcs
                // g containers will be the slices of the pie 
 
-    g.append("path")
+    g2.append("path")
         .attr("d", arc) // cerate an attribute d for the path - we created arc function earlier around line 220
         .style("fill", function(d) { 
         return color(d.data.label); }); 
 
-    g.append("text")  // .centroid gives centers 
+    g2.append("text")  // .centroid gives centers 
         .attr("transform", function(d) { return "translate(" + labelArc.centroid(d) + ")"; }) // moves text around as needed
         .attr("dy", ".35em")
         .text(function(d) { return d.data.label + " (" + numberWithCommas(d.data.value) + ")"; });
@@ -403,8 +403,8 @@ function updatePie3(feature) { //passes in one feature from data set
      // console.log(feature);
     // set up dataset
 
-// ARRAY: 4 categories, all with same keys; labels: .... values: .... 
-    var d3_dataset = [{"label":"English Language Leaners" + "%: ", "value":feature.properties.PercELLs}];          
+// ARRAY: 2 categories, all with same keys; labels: .... values: .... 
+    var d3_dataset3 = [{"label":"English Language Leaners" + "%: ", "value":feature.properties.PercELLs}];          
      // console.log(feature);
 
     // set width and height of drawing
@@ -426,30 +426,30 @@ function updatePie3(feature) { //passes in one feature from data set
         .outerRadius(radius - 70) // setting label to start 100 px from edge of chart
         .innerRadius(radius - 70); // need to set both outer and inner or arc function won't work
 
-    var pie = d3.layout.pie() // this is a d3 convenience function (d3.layout.whatever)
+    var pie3 = d3.layout.pie() // this is a d3 convenience function (d3.layout.whatever)
         .sort(null) // tell it to sort it by some attribute
         .value(function(d) { console.log(d); return d.value; }); // what value do we want to use? 
 
-    var svg = d3.select("#d3vis") // selects and creates svg container 
+    var svg3 = d3.select("#d3vis3") // selects and creates svg container 
                 .append("svg")
                 .attr("width", width) // set width and ht
                 .attr("height", height) //explicitly sets them to be =
                 .append("g")  // ** This is a way to keep drawing at center!! g container: transform property of svg to draw a g container at 00 and move to center of drawing
                 .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")"); 
 
-    var g = svg.selectAll(".arc") // select all class = arc elements
-               .data(pie(d3_dataset)) // loading data run through pie function so certain attributes will come out of it 
+    var g3 = svg3.selectAll(".arc") // select all class = arc elements
+               .data(pie3(d3_dataset3)) // loading data run through pie function so certain attributes will come out of it 
                .enter() // binding the dataset defined above but also info about how wide, radius, etc. 
                .append("g") // made four of these
                .attr("class", "arc"); // classed them as arcs
                // g containers will be the slices of the pie 
 
-    g.append("path")
+    g3.append("path")
         .attr("d", arc) // cerate an attribute d for the path - we created arc function earlier around line 220
         .style("fill", function(d) { 
         return color(d.data.label); }); 
 
-    g.append("text")  // .centroid gives centers 
+    g3.append("text")  // .centroid gives centers 
         .attr("transform", function(d) { return "translate(" + labelArc.centroid(d) + ")"; }) // moves text around as needed
         .attr("dy", ".35em")
         .text(function(d) { return d.data.label + " (" + numberWithCommas(d.data.value) + ")"; });
