@@ -1,11 +1,6 @@
 
 // SCHOOL DEMOGRAPHICS MAP: FINAL PROJECT 
 
-// Built form homework d3 map project
-// to do: change list to drop down
-//  create charts for each school
-//  figure out how to display, both from dropdown list but also in a grid below or to the side of the map
-
 var map = L.map('map');
     map.fitBounds([
     [40.685626, -73.956567],
@@ -46,7 +41,6 @@ var SchoolDemographicsGeoJSON;
 // }
 
 
-
 addDistrict13(); 
 
 function addDistrict13() {
@@ -62,7 +56,6 @@ $.getJSON( "geojson/D13_polygon.geojson", function( data ) {
             color:"#1381ab",
             fillColor: 'White',
             fillOpacity: 0.5
-
         };
         return style;
     };
@@ -73,7 +66,6 @@ $.getJSON( "geojson/D13_polygon.geojson", function( data ) {
 
     addSchoolData();
 });
-  
 }
 
 function addSchoolData() {
@@ -93,15 +85,13 @@ $.getJSON( "geojson/SchoolDemographicsWGS84.geojson", function( data ) {
     SchoolDemographicsGeoJSON = L.geoJson(dataset, {
         style: schoolStyle,
         onEachFeature: schoolsOnEachFeature
-    }).addTo(map);
 
-    // school building data did not show up because I'd removed the .addTo(map) -- still have error showing up related to addTo on line 138:
-    // addTo is undefined "cannot read property 'addTo' of undefined"
+    }).addTo(map);
+        // school building data did not show up because I'd removed the .addTo(map) -- still have error showing up related to addTo on line 138:
+        // addTo is undefined "cannot read property 'addTo' of undefined"
     }
-     // create layer controls
        // createLayerControls(); 
 }
-
 
     // **** I am trying to define colors of charter and public schools as functions so I can use them for legend:
     var schoolStyle = function (feature, geometry) {
@@ -115,17 +105,15 @@ $.getJSON( "geojson/SchoolDemographicsWGS84.geojson", function( data ) {
         };
         return style;
     }
-    // ** should this parameter be d? or should it be schoolType? 
+
     function schoolColor(schoolType) {
 
         if (schoolType ==="charter") {
-
             fillColor = "#ff7f0e";
         } 
              else {
              fillColor = "#e53609";
              };
-
         return fillColor;   
     }
       
@@ -140,37 +128,38 @@ var count = 0;
 // on each feature function that loops through the dataset, binds popups, and creates a count
 var schoolsOnEachFeature = function(Feature, layer){
 
-    // ...layer) refers to leaflet layer.on function below : that creates or is considered a layer
+
+    // ...layer) refers to leaflet layer.on function below : that is considered a layer
     // *** parameters to feed into function should be dataset -- features
     var schoolInfo = (Feature.properties);
     // bind some feature properties to a pop up with an .on("click", ...) command. Do this so we can fire it both on and off the map
     layer.on("click", function (e) {
         var bounds = layer.getBounds();
         var popContent = Feature.properties.School + "<br ><strong>Total Enrollment 2015: </strong>" + Feature.properties.TotalEnroll 
-        + "<br /><strong>Black: </strong>" + (Feature.properties.PerBlack*100).toFixed(1) + "%" + "<br>" + "<strong>White: </strong>" 
-        +  (Feature.properties.PerWhite*100).toFixed(1) + "%"  + "<br>" + "<strong>Asian: </strong>" +  (Feature.properties.PerAsian*100).toFixed(1) + "%" 
+        + "<br /><strong>Black: </strong>" + (Feature.properties.PerBlack*100).toFixed(1) + "%" + "<br>" 
+        + "<strong>White: </strong>" +  (Feature.properties.PerWhite*100).toFixed(1) + "%"  + "<br>" 
+        + "<strong>Asian: </strong>" +  (Feature.properties.PerAsian*100).toFixed(1) + "%" 
         + "<br>" + "<strong>Hispanic: </strong>" +  (Feature.properties.PerHispanic*100).toFixed(1) + "%";
         popup.setLatLng(bounds.getCenter());
         popup.setContent(popContent);
         map.openPopup(popup);
+
     });
 
     // add an ID to each layer so we can fire the popup outside of the map
     layer._leaflet_id = 'schoolsLayerID' + count; 
-// only do this count once
-  // draw pie for first selected -- 
+    // only do this count once
+    // draw pie for first selected -- 
     if (count == 0) {
-        updatePie(Feature);
+        updatePie(Feature), updatePie2(Feature), updatePie3(Feature);
     } 
         count++;
-
 }
 
 
 
 // function createLayerControls(){
 //     // add in layer controls
-
 //     var overlayMaps = {
 //         "School racial diversity ": SchoolDemographicsGeoJSON,
 //     };
@@ -179,11 +168,8 @@ var schoolsOnEachFeature = function(Feature, layer){
 // }
 
 // create a container for the legend and set the location
-//creating permenant big legend
 var legend = L.control({position: 'bottomleft'});
-
 legend.onAdd = function (map) {
-
     var div = L.DomUtil.create('div', 'info legend');
     // this is an html legend instead of leaflet generated through functions
     // circles for legend are svg elements
@@ -194,7 +180,6 @@ legend.onAdd = function (map) {
             '<p><b>Data</b><br />' +
             '<span>from the <a href=\"http://schools.nyc.gov/default.htm\">NYC DOE</a><br />' + 
             'and <a href=\"http://www.insideschools.org\">InsideSchools.org</a></span><br /></p>';
-
     return div;
 }
 // add the legend to the map
@@ -202,11 +187,9 @@ legend.addTo(map);
 
 
 
-////////////////// NOTHING BELOW IS WORKING, NOTHING past line 213 LOGGING TO CONSOLE EITHER.
-
 // function to create a list in the right hand column with links that will launch the pop-ups on the map
 function createDropdown(dataset) {
- 
+
     console.log(dataset);
     // use d3 to select the div and then iterate over the dataset appending a list element with a link for clicking and firing
     // first we'll create an unordered list ul elelemnt inside the <div id='list'></div>. The result will be <div id='list'><ul></ul></div>
@@ -221,59 +204,64 @@ function createDropdown(dataset) {
             .append("option")
             .html(function(d) {
                 return d.properties.School;
-                //+ " " + d.properties.charter
             });
 
-                // var ULs = d3.select("#list")
-                // .append("ul");
-
-    ///////// Code below was for the list displayed in a div from earlier class example. Above code displays list in dropdown
-    // // now that we have a selection and something appended to the selection, let's create all of the list elements (li) with the dataset we have 
-    // ULs.selectAll("li")
-    //     .data(dataset.feature)
-    //     .enter()
-    //     .append("li")
-    //     .html(function(d) {  
-    //     return '<a href="#">' + d.properties.School; 
-    //     //+ '</a>' + "<br>" + d.properties.schoolType + "<br>";
-    //     })
-
-    //     .on('click', function(d, i) {
-    //         var leafletId = 'schoolsLayerID' + i;
-    //         map._layers[leafletId].fire('click');
-    //     });
-
-
   function change() {
-
         // get id of selected and fire click
         var si = school_dropdown.property('selectedIndex');
         var leafletId = 'schoolsLayerID' + si; // leaflet array ids are set above at top of doc?
-        console.log(leafletId);
+        // console.log(leafletId);
         map._layers[leafletId].fire('click'); // ids are set for d3 and leaflet so both should be the same
 
         // get data out of selected and draw pie chart
         var s = options.filter(function (d, i) { return i === si }); 
         //.filter is standard javascript function, go through options and only return one where ids are the same
-        console.log(s) // pulls out datum for this pie chart, s is a d3 object or array
+        // console.log(s) // pulls out datum for this pie chart, s is a d3 object or array
         var feature = s.datum(); // s.datum()  extracts whatever is bound to this element (d3 function?)
         // draw pie chart
-        updatePie(feature);
-////**********///////// updatePie2(feature);
+        updatePie(feature); 
+        // updatePie2(feature);
+        // updatePie3(feature);
     }
-    }
+
+
+ ////**********///////// updatePie2(feature);
+//   function change() {
+//         var si = school_dropdown.property('selectedIndex');
+//         var leafletId = 'schoolsLayerID' + si; 
+//         console.log(leafletId);
+//         map._layers[leafletId].fire('click'); 
+//         var s = options.filter(function (d, i) { return i === si }); 
+
+//         console.log(s) /
+//         var feature = s.datum(); 
+//         updatePie2(feature);
+//     }
+
+
+// ////**********///////// updatePie3(feature);
+//   function change() {
+//         var si = school_dropdown.property('selectedIndex');
+//         var leafletId = 'schoolsLayerID' + si; 
+//         console.log(leafletId);
+//         map._layers[leafletId].fire('click'); 
+//         var s = options.filter(function (d, i) { return i === si }); 
+//         console.log(s)
+//         var feature = s.datum();
+//         updatePie3(feature);
+//     }
+//     }
 
 //// *********create update pie 2 here, just like function updatePie(feature) {
 // but with other data like ELL and reduced lunch}
 
 
 ////////////////////////PIECHART 
-// ** the bracket below doesn't match up with the one at bottom. 
 function updatePie(feature) { //passes in one feature from data set 
 
     // remove any previous content from svg
     d3.select('#d3vis').html(''); // set html(' ') to be empty: id is in new row in html doc. div there has an svg container as placeholder
-     console.log(feature);
+     // console.log(feature);
     // set up dataset
 
 // ARRAY: 4 categories, all with same keys; labels: .... values: .... 
@@ -283,9 +271,7 @@ function updatePie(feature) { //passes in one feature from data set
                       {"label":"Hispanic", "value":feature.properties.PerHispanic}];
                  //   {"label":"Data Not Available", "value":feature.properties.PerHispanic(null)}];     
                  // null value line says unexpected token : is a problem                 
-     console.log(feature);
-// nothing logging here on line 274
-//colors: green #51b266 3f9409 blue; 60b9cc, 5c82a5 1a6ab4
+     // console.log(feature);
 
     // set width and height of drawing
     var width = $('.col-sm-4').width(), 
@@ -304,8 +290,8 @@ function updatePie(feature) { //passes in one feature from data set
 
     // set labels  change radius to change where text falls
     var labelArc = d3.svg.arc() // how far from edge
-        .outerRadius(radius - 100) // setting label to start 100 px from edge of chart
-        .innerRadius(radius - 100); // need to set both outer and inner or arc function won't work
+        .outerRadius(radius - 70) // setting label to start 100 px from edge of chart
+        .innerRadius(radius - 70); // need to set both outer and inner or arc function won't work
         // we told it to anchor text in midle of string, so setting it to -10 makes labels hang off chart
 
     var pie = d3.layout.pie() // this is a d3 convenience function (d3.layout.whatever)
@@ -344,6 +330,131 @@ function updatePie(feature) { //passes in one feature from data set
         .text(function(d) { return d.data.label + " (" + numberWithCommas(d.data.value) + ")"; });
 
 };
+}
+
+////////////////////////PIECHART  #2
+function updatePie2(feature) { //passes in one feature from data set 
+
+    // remove any previous content from svg
+    d3.select('#d3vis2').html(''); // set html(' ') to be empty: id is in new row in html doc. div there has an svg container as placeholder
+     console.log(feature);
+    // set up dataset
+
+// ARRAY: 4 categories, all with same keys; labels: .... values: .... 
+    var d3_dataset = [{"label":"Free lunch" + "%: ", "value":feature.properties.PercFreeLunch}]; 
+
+    // set width and height of drawing
+    var width = $('.col-sm-4').width(), 
+        height = width, 
+        radius = width / 2;
+
+    // // set color scale and range
+    var color = d3.scale.ordinal() // tells d3 to pass in the string (label name) to determine color
+        .range(["#1a6ab4", "#7D7D7C"]);
+
+            //fillColor = "#ff7f0e"; fillColor = "#e53609";
+    // set inner and outer radius
+    var arc = d3.svg.arc() // set radius for center 
+        .outerRadius(radius - 12)
+        .innerRadius(50); // if not 0 this will be donut chart
+
+    // set labels  change radius to change where text falls
+    var labelArc = d3.svg.arc() // how far from edge
+        .outerRadius(radius - 70) // setting label to start 100 px from edge of chart
+        .innerRadius(radius - 70); // need to set both outer and inner or arc function won't work
+        // we told it to anchor text in midle of string, so setting it to -10 makes labels hang off chart
+
+    var pie2 = d3.layout.pie() // this is a d3 convenience function (d3.layout.whatever)
+        .sort(null) // tell it to sort it by some attribute
+        .value(function(d) { console.log(d); return d.value; }); // what value do we want to use? 
+        // we created function with label and value so we'll pass that through an anonymous functino to pull out that d value
+
+    var svg = d3.select("#d3vis") // selects and creates svg container 
+                .append("svg")
+                .attr("width", width) // set width and ht
+                .attr("height", height) //explicitly sets them to be =
+                .append("g")  // ** This is a way to keep drawing at center!! g container: transform property of svg to draw a g container at 00 and move to center of drawing
+                .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")"); 
+                // if you don't do this must figure out a way to draw pie chart in center of container
+
+    var g = svg.selectAll(".arc") // select all class = arc elements
+               .data(pie(d3_dataset)) // loading data run through pie function so certain attributes will come out of it 
+               .enter() // binding the dataset defined above but also info about how wide, radius, etc. 
+               .append("g") 
+               .attr("class", "arc"); // classed them as arcs
+               // g containers will be the slices of the pie 
+
+    g.append("path")
+        .attr("d", arc) // cerate an attribute d for the path - we created arc function earlier around line 220
+        .style("fill", function(d) { 
+        return color(d.data.label); }); 
+
+    g.append("text")  // .centroid gives centers 
+        .attr("transform", function(d) { return "translate(" + labelArc.centroid(d) + ")"; }) // moves text around as needed
+        .attr("dy", ".35em")
+        .text(function(d) { return d.data.label + " (" + numberWithCommas(d.data.value) + ")"; });
+};
+
+////////////////////////PIECHART  #3
+function updatePie3(feature) { //passes in one feature from data set 
+
+    // remove any previous content from svg
+    d3.select('#d3vis3').html(''); // set html(' ') to be empty: id is in new row in html doc. div there has an svg container as placeholder
+     // console.log(feature);
+    // set up dataset
+
+// ARRAY: 4 categories, all with same keys; labels: .... values: .... 
+    var d3_dataset = [{"label":"English Language Leaners" + "%: ", "value":feature.properties.PercELLs}];          
+     // console.log(feature);
+
+    // set width and height of drawing
+    var width = $('.col-sm-4').width(), 
+        height = width, 
+        radius = width / 2;
+
+    // set color scale and range
+    var color = d3.scale.ordinal()
+        .range(["#EB8D13", "#7D7D7C"]);
+
+    // set inner and outer radius
+    var arc = d3.svg.arc() // set radius for center 
+        .outerRadius(radius - 12)
+        .innerRadius(50); // if not 0 this will be donut chart
+
+    // set labels  change radius to change where text falls
+    var labelArc = d3.svg.arc() // how far from edge
+        .outerRadius(radius - 70) // setting label to start 100 px from edge of chart
+        .innerRadius(radius - 70); // need to set both outer and inner or arc function won't work
+
+    var pie = d3.layout.pie() // this is a d3 convenience function (d3.layout.whatever)
+        .sort(null) // tell it to sort it by some attribute
+        .value(function(d) { console.log(d); return d.value; }); // what value do we want to use? 
+
+    var svg = d3.select("#d3vis") // selects and creates svg container 
+                .append("svg")
+                .attr("width", width) // set width and ht
+                .attr("height", height) //explicitly sets them to be =
+                .append("g")  // ** This is a way to keep drawing at center!! g container: transform property of svg to draw a g container at 00 and move to center of drawing
+                .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")"); 
+
+    var g = svg.selectAll(".arc") // select all class = arc elements
+               .data(pie(d3_dataset)) // loading data run through pie function so certain attributes will come out of it 
+               .enter() // binding the dataset defined above but also info about how wide, radius, etc. 
+               .append("g") // made four of these
+               .attr("class", "arc"); // classed them as arcs
+               // g containers will be the slices of the pie 
+
+    g.append("path")
+        .attr("d", arc) // cerate an attribute d for the path - we created arc function earlier around line 220
+        .style("fill", function(d) { 
+        return color(d.data.label); }); 
+
+    g.append("text")  // .centroid gives centers 
+        .attr("transform", function(d) { return "translate(" + labelArc.centroid(d) + ")"; }) // moves text around as needed
+        .attr("dy", ".35em")
+        .text(function(d) { return d.data.label + " (" + numberWithCommas(d.data.value) + ")"; });
+
+};
 
 
 function addToMap() {
@@ -354,10 +465,11 @@ d13PolygonGeoJSON.addTo(map);
 SchoolDemographicsGeoJSON.addTo(map);
 leaflet_GeoJSON.addToMap;
 };
-function numberWithCommas(x) {
-    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-}
-/// to remove numbers after decimal point: 
+
+// function numberWithCommas(x) {
+//     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+// }
+// /// to remove numbers after decimal point: 
 // function numberWithoutDecimals(x) {
  //   return x.toFixed().replace(1);
 // }
