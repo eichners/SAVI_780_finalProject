@@ -83,24 +83,24 @@ function addSchoolSizeData() {
 // use jQuery get geoJSON to grab geoJson layer, parse it, then plot it on the map using the plotDataset function
 // geojson/D13Enrollment06-15_AccurateLoc.geojson
 $.getJSON( "geojson/D13_Enrollment_06-15_2.geojson", function( data ) {
-    var dataset = data;
+    var schools = data;
     //console.log(data);
-    plotDataset(dataset);
-    createLayerForClick(dataset);
-    addToMap();
-});
+    //plotDataset(dataset);
+    //createLayerForClick(dataset);
+    //addToMap();
+
 // can I use a feature collection, + array of years to create a set of markers for each year? var featureCollection = properties[2006, 2007 2009, 2010, 2011, 2012, 2013, 2014, 2015]
 // (Feature.properties.Growth\/dec*10)
 
-function plotDataset(dataset) {
-      leaflet_geoJSON = L.geoJson(dataset, {
-      style: mapStyle,
-      onEachFeature: schoolClick
-    }).addTo(map);
+  // function plotDataset(dataset) {
+  //     SchoolSize_GeoJSON = L.geoJson(dataset, {
+  //     style: mapStyle,
+  //     onEachFeature: schoolClick
+  // }) //.addTo(map);
 
     // create layer controls
     createLayerControls(); 
-}
+
 
 var mapStyle = function (feature, latlng) {
 
@@ -110,15 +110,14 @@ var mapStyle = function (feature, latlng) {
         console.log(growthDecline);
    
         var schoolMarker = L.circleMarker(latlng, {
-            // radius: feature.properties.Growthdecline;
             weight: 1,
             color:'black',
             fillColor: markerColor(publicCharter, growthDecline),
             fillOpacity: 0.5,
             radius: markerRadius(growthDecline)
         });
-        return schoolMarker;
-    }
+       return schoolMarker;
+    
 
 // find top range of G/D and set if/else stuff here for radius
     function markerRadius (d) {
@@ -146,96 +145,86 @@ var mapStyle = function (feature, latlng) {
            d.substring(0,1) === "1" && f >= 0 ? '#fe9929' :
                     '#ffffd4';
     };
-    return mapStyle;
+    return markerColor;
     }
-//  }
-    //////// POPUP WINDOW
-    var schoolClick = function (feature, layer) {
-          /////// var popupText attemtps to make popup ignore 0 value properties and instead show first year with data for enrollment
 
-       var enrollment = (feature.properties);
 
-        if (d._2006 == 0) {
-          d._2007;
-        } else if (d._2006 != 0) {
-          'Enrollment 2006: ' + d._2006 + '<br />';
-        } else if (d._2007 == 0) {
-          d._2008;
-        } else if (d._2007) {
-          'Enrollment 2007: ' + d._2007 + '<br />';
-        } else if (d._2008 == 0) {
-          d._2009;
-        } else if (d._2008 != 0) {
-          'Enrollment 2008: ' + d._2008 + '<br />';
-        } else if (d._2009 == 0) {
-          d._2010;
-        } else if (d._2009 != 0) {
-          'Enrollment 2009: ' + d._2009 + '<br />';
-        } else if (d._2010 == 0) {
-          d._2011;
-        } else if (d._2010 != 0) {
-          'Enrollment 2010: ' + d._2010 + '<br />';
-        } else if (d._2011 == 0) {
-          d._2012;
-        } else if (d._2011 != 0) {
-          'Enrollment 2011: ' + d._2011 + '<br />';
-        } else if (d._2012 == 0) {
-          d._2013;
-        } else if (d._2012 != 0) {
-          'Enrollment 2012: ' + d._2012 + '<br />';
-        } else if (d._2013 == 0) {
-          d._2014;
-        } else if (d._2013 != 0) {
-          'Enrollment 2013: ' + d._2013 + '<br />';
-        } else if (d._2014 == 0) {
-          '<br />';
-        } else (d._2014 != 0) 
-          'Enrollment 2014: ' + d._2014 + '<br />';
-        
-        
-        schoolPointToLayer.bindPopup('<b>' + feature.properties.School + '</B>'
-            + '<b>' + enrollment + '</b>' + 
-            '<b>Enrollment 2015: </b>' + feature.properties._2015);  // var popupContent = 
+  //////// POPUP WINDOW
 
-      var popupOptions = {
-          minWidth: 50,
-          maxWidth: 150, // make sure popup window doesn't get too big
-          autoPanPadding: new L.Point(5, 60) // this makes sure the popup pushes down from the top (with space) of map rather than being hidden
-      }
-    
-       // layer.bindPopup(popupContent, popupOptions)
-
+  var schoolOnEachFeature = function (feature, layer) {
+    //var popContent = feature.properties.School;
+    layer.bindPopup(feature.properties.School + '<br>' 
+      + "<br ><strong>Total Enrollment 2015: </strong>" + feature.properties.TotalEnroll);
+    }
+  
     SchoolSizeGeoJSON = L.geoJson(schools, {
-        pointToLayer: schoolPointToLayer,
-        onEachFeature: schoolClick
-  });
+      pointToLayer: mapStyle,
+      onEachFeature: schoolOnEachFeature
+    });
   addTo(map);
+  });
+
 
     // create layer controls
-    // createLayerControls(); 
+function createLayerControls(){
+    // add in layer controls
 
+    var overlayMaps = {
+        "Enrollment": SchoolSizeGeoJSON,
+   
+
+function addToMap
 d13PolygonGeoJSON.addTo(map);
 SchoolSizeGeoJSON.addTo(map);
-}
+
+createLayerControls();
+} 
 
 
+
+
+
+ // //////// POPUP content, gave up on this: not working with years 
+ //    var schoolClick = function (d) {
+ //      /////// var popupText attemtps to make popup ignore 0 value properties and instead show first year with data for enrollment
+
+ //       // var enrollment = (d.properties);
+
+ //       // d._2006 == 0 ? d._2007 :
+ //       // d._2006 != 0 ? 'Enrollment 2006: ' + d._2006 + '<br />' :
+ //       // d._2007 == 0 ? d._2008 :
+ //       // d._2007 != 0 ? 'Enrollment 2007: ' + d._2007 + '<br />' :
+ //       // d._2008 == 0 ? d._2009 :
+ //       // d._2008 != 0 ? 'Enrollment 2008: ' + d._2008 + '<br />' :
+ //       // d._2009 == 0 ? d._2010 :
+ //       // d._2009 != 0 ? 'Enrollment 2009: ' + d._2009 + '<br />' :
+ //       // d._2010 == 0 ? d._2011 :
+ //       // d._2010 != 0 ? 'Enrollment 2010: ' + d._2010 + '<br />' :
+ //       // d._2011 == 0 ? d._2012 :
+ //       // d._2011 != 0 ? 'Enrollment 2011: ' + d._2011 + '<br />' :
+ //       // d._2012 == 0 ? d._2013 :
+ //       // d._2012 != 0 ? 'Enrollment 2012: ' + d._2012 + '<br />' :
+ //       // d._2013 == 0 ? d._2014 :
+ //       // d._2013 != 0 ? 'Enrollment 2013: ' + d._2013 + '<br />' :
+ //       // d._2014 == 0 ? '':
+ //       // d._2014 != 0 ? 'Enrollment 2014: ' + d._2014 + '<br />' :
+
+        
+        
+ //        schoolPointToLayer.bindPopup('<b>' + feature.properties.School + '</B>'
+ //            //+ '<b>' + enrollment + '</b>' 
+ //            + '<b>Enrollment 2015: </b>' + feature.properties._2015);  // var popupContent = 
+
+ //      var popupOptions = {
+ //          minWidth: 50,
+ //          maxWidth: 150, // make sure popup window doesn't get too big
+ //          autoPanPadding: new L.Point(5, 60) // this makes sure the popup pushes down from the top (with space) of map rather than being hidden
+ //      }
 
         // popupText += (Feature.properties._2006) ? '' + Feature.properties._2006 : '';
         // popupText += (Feature.properties._2015) ? '' + Feature.properties._2015 : '';
         // popupText += (Feature.properties.GrowthDecline) ? '' + Feature.properties.GrowthDecline : '';
 
-        //  + "<br />" +
-        // "2007: " + features.properties._2007 + "<br />" +
-        // "2008: " + features.properties._2008 + "<br />" + 
-        // "2009: " + features.properties._2009 + "<br />" + 
-        // "2010: " + features.properties._2010 + "<br />" + 
-        // "2011: " + features.properties._2011 + "<br />" + 
-        // "2012: " + features.properties._2012 + "<br />" + 
-        // "2013: " + features.properties._2013 + "<br />" + 
-        // "2014: " + features.properties._2014 + "<br />" + 
-        // "2015: " + features.properties._2015 + "<br />"
-        //)
-        
 
   // function to plot the dataset passed to it
   // earlier error: on homework map: school building data did not show up because I'd removed the addTo(map)
