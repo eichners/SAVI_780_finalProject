@@ -27,46 +27,51 @@
           </button>
           <a class="navbar-brand" href="#"><font-color = "#808080">Brooklyn School District 13  <b> Enrollment 2006-2015</b></font></a>
         </div>
-
-        <!-- Collect the nav links, forms, and other content for toggling -->
-        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-          <ul class="nav navbar-nav">
-            <li><a href="#">Link Here</a></li>
-          </ul>
-          <ul class="nav navbar-nav navbar-right">
-            <li><a href="#">Link Here</a></li>
-          </ul>
+          <!-- Collect the nav links, forms, and other content for toggling -->
+          <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav">
+              <li><a href="#">Link Here</a></li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+              <li><a href="#">Link Here</a></li>
+            </ul>
         </div><!-- /.navbar-collapse -->
       </div><!-- /.container-fluid -->
     </nav>
-    <div class="container-fluid">
-      <div class="row"><!-- divided into two columns, one for map one for d3 chart -->
-        <div class="col-sm-8">
-        <div id="map">
+      <div class="container-fluid">
+        <div class="row"><!-- divided into two columns, one for map one for d3 chart -->
+            <div class="col-sm-9">
+              <div id="map">
+            </div>
         </div>
-      </div>
-        <div class="col-sm-4">
-          <div class="container-fluid">
-            <div class="row">
-            <div id="school_dropdown">
-            </div>
-            </div>
-              <div class="row">
-              <div id="d3vis">
-              </div>
-              </div>
-                <div class="row">    
-                <div id="d3vis2">
+            <div class="col-sm-3">
+              <div class="container-fluid">
+                <div class="row">
+                  <div id="school_dropdown">
+                  </div>
                 </div>
-                </div>
-                  <div class="row">    
-                  <div id="d3vis3">
-                  </div> 
-                  </div> 
+                    <div class="row">
+                      <div class="row">
+                        <p class="chartLabel"><br /><br />School Diversity: race </p>
+                        </div>
+                      <div id="d3vis">
+                      </div>
+                   </div>
+                   <div class="row">
+                        <p class="chartLabel"><br />Percent student body qualifying for free or reduced lunch </p>
+                        </div>
+                     <div class="row">    
+                        <div id="d3vis2">
+                        </div>
+                      </div>
+                    <div class="row">    
+                      <div id="d3vis3">
+                </div> 
+              </div> 
+            </div>
           </div>
         </div>
       </div>
-    </div>
   </body>
   <!-- Including jQuery -->
   <script type="text/javascript" src="libraries/jQuery/jquery-1.11.2.min.js"></script>

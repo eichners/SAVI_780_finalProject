@@ -71,11 +71,11 @@ $.getJSON( "geojson/D13_polygon.geojson", function( data ) {
 function addSchoolData() {
 
 // use jQuery get geoJSON to grab geoJson layer, parse it, then plot it on the map using the plotDataset function
-$.getJSON( "geojson/SchoolDemographicsWGS84.geojson", function( data ) {
+$.getJSON( "geojson/SchoolDemographics_WGS84_.geojson", function( data ) {
     var dataset = data; // d3
-
     // draw the dataset on the map
     plotDataset(dataset);
+    //console.log(data);
     //create the sidebar with links to fire polygons on the map
     createDropdown(dataset);
     
@@ -86,14 +86,12 @@ $.getJSON( "geojson/SchoolDemographicsWGS84.geojson", function( data ) {
         style: schoolStyle,
         onEachFeature: schoolsOnEachFeature
 
+
     }).addTo(map);
-        // school building data did not show up because I'd removed the .addTo(map) -- still have error showing up related to addTo on line 138:
-        // addTo is undefined "cannot read property 'addTo' of undefined"
     }
        // createLayerControls(); 
 }
 
-    // **** I am trying to define colors of charter and public schools as functions so I can use them for legend:
     var schoolStyle = function (feature, geometry) {
         var schoolType = feature.properties.charter; 
 
@@ -139,7 +137,9 @@ var schoolsOnEachFeature = function(Feature, layer){
         + "<br /><strong>Black: </strong>" + (Feature.properties.PerBlack*100).toFixed(1) + "%" + "<br>" 
         + "<strong>White: </strong>" +  (Feature.properties.PerWhite*100).toFixed(1) + "%"  + "<br>" 
         + "<strong>Asian: </strong>" +  (Feature.properties.PerAsian*100).toFixed(1) + "%" 
-        + "<br>" + "<strong>Hispanic: </strong>" +  (Feature.properties.PerHispanic*100).toFixed(1) + "%";
+        + "<br>" + "<strong>Hispanic: </strong>" +  (Feature.properties.PerHispanic*100).toFixed(1) + "%"
+        + "<br>" + "<strong>Percent qualifying for free lunch: </strong>" + Feature.properties.PercFreeLunch + "%"
+        + "<br>" + "<strong>Percent English Language Learners: </strong>" + Feature.properties.PercELLs + "%";
         popup.setLatLng(bounds.getCenter());
         popup.setContent(popContent);
         map.openPopup(popup);
@@ -151,7 +151,8 @@ var schoolsOnEachFeature = function(Feature, layer){
     // only do this count once
     // draw pie for first selected -- 
     if (count == 0) {
-        updatePie(Feature), updatePie2(Feature), updatePie3(Feature);
+        updatePie(Feature),
+        updatePie2(Feature), updatePie3(Feature);
     } 
         count++;
 }
@@ -210,20 +211,20 @@ function createDropdown(dataset) {
         // get id of selected and fire click
         var si = school_dropdown.property('selectedIndex');
         var leafletId = 'schoolsLayerID' + si; // leaflet array ids are set above at top of doc?
-        // console.log(leafletId);
+        console.log(leafletId);
         map._layers[leafletId].fire('click'); // ids are set for d3 and leaflet so both should be the same
 
         // get data out of selected and draw pie chart
         var s = options.filter(function (d, i) { return i === si }); 
         //.filter is standard javascript function, go through options and only return one where ids are the same
-        // console.log(s) // pulls out datum for this pie chart, s is a d3 object or array
+        console.log(s) // pulls out datum for this pie chart, s is a d3 object or array
         var feature = s.datum(); // s.datum()  extracts whatever is bound to this element (d3 function?)
         // draw pie chart
         updatePie(feature); 
-        // updatePie2(feature);
-        // updatePie3(feature);
+        updatePie2(feature),
+        updatePie3(feature);
     }
-
+}
 
  ////**********///////// updatePie2(feature);
 //   function change() {
@@ -261,21 +262,21 @@ function updatePie(feature) { //passes in one feature from data set
 
     // remove any previous content from svg
     d3.select('#d3vis').html(''); // set html(' ') to be empty: id is in new row in html doc. div there has an svg container as placeholder
-     // console.log(feature);
+    console.log(feature);
     // set up dataset
 
 // ARRAY: 4 categories, all with same keys; labels: .... values: .... 
-    var d3_dataset = [{"label":"Black", "value":feature.properties.PerBlack}, 
-                      {"label":"White", "value":feature.properties.PerWhite}, 
-                      {"label":"Asian", "value":feature.properties.PerAsian},
-                      {"label":"Hispanic", "value":feature.properties.PerHispanic}];
+    var d3_dataset = [{"label":"Black", "value":100*(feature.properties.PerBlack).toFixed(1)}, 
+                      {"label":"White", "value":100*(feature.properties.PerWhite).toFixed(1)}, 
+                      {"label":"Asian", "value":100*(feature.properties.PerAsian).toFixed(1)},
+                      {"label":"Hispanic", "value":100*(feature.properties.PerHispanic).toFixed(1)}];
                  //   {"label":"Data Not Available", "value":feature.properties.PerHispanic(null)}];     
                  // null value line says unexpected token : is a problem                 
-     // console.log(feature);
+    console.log(feature);
 
     // set width and height of drawing
-    var width = $('.col-sm-4').width(), 
-        height = width, 
+    var width = $('.col-sm-3').width(), 
+        height = width * .7, 
         radius = width / 2;
 
     // set color scale and range
@@ -285,7 +286,7 @@ function updatePie(feature) { //passes in one feature from data set
             //fillColor = "#ff7f0e"; fillColor = "#e53609";
     // set inner and outer radius
     var arc = d3.svg.arc() // set radius for center 
-        .outerRadius(radius - 12)
+        .outerRadius(radius - 100)
         .innerRadius(50); // if not 0 this will be donut chart
 
     // set labels  change radius to change where text falls
@@ -327,12 +328,12 @@ function updatePie(feature) { //passes in one feature from data set
     g.append("text")  // .centroid gives centers 
         .attr("transform", function(d) { return "translate(" + labelArc.centroid(d) + ")"; }) // moves text around as needed
         .attr("dy", ".35em")
-        .text(function(d) { return d.data.label + " (" + numberWithCommas(d.data.value) + ")"; });
+        .text(function(d) { return d.data.label + " (" + (d.data.value) + ")"; });
 
 };
-}
 
-////////////////////////PIECHART  #2
+
+// ////////////////////////PIECHART  #2
 function updatePie2(feature) { //passes in one feature from data set 
 
     // remove any previous content from svg
@@ -341,11 +342,12 @@ function updatePie2(feature) { //passes in one feature from data set
     // set up dataset
 
 // ARRAY: 4 categories, all with same keys; labels: .... values: .... 
-    var d3_dataset2 = [{"label":"Free lunch" + "%: ", "value":feature.properties.PercFreeLunch}]; 
+    var d3_dataset2 = [{"label":"Free lunch", "value":feature.properties.PercFreeLunch},
+                       {"label":"other", "value":100-(feature.properties.PercFreeLunch)}]; 
 
     // set width and height of drawing
-    var width = $('.col-sm-4').width(), 
-        height = width, 
+    var width = $('.col-sm-3').width(), 
+        height = width *.65, 
         radius = width / 2;
 
     // // set color scale and range
@@ -355,7 +357,7 @@ function updatePie2(feature) { //passes in one feature from data set
             //fillColor = "#ff7f0e"; fillColor = "#e53609";
     // set inner and outer radius
     var arc = d3.svg.arc() // set radius for center 
-        .outerRadius(radius - 12)
+        .outerRadius(radius - 100)
         .innerRadius(50); // if not 0 this will be donut chart
 
     // set labels  change radius to change where text falls
@@ -392,7 +394,7 @@ function updatePie2(feature) { //passes in one feature from data set
     g2.append("text")  // .centroid gives centers 
         .attr("transform", function(d) { return "translate(" + labelArc.centroid(d) + ")"; }) // moves text around as needed
         .attr("dy", ".35em")
-        .text(function(d) { return d.data.label + " (" + numberWithCommas(d.data.value) + ")"; });
+        .text(function(d) { return d.data.label + " (" + (d.data.value) + ")"; });
 };
 
 ////////////////////////PIECHART  #3
@@ -404,12 +406,13 @@ function updatePie3(feature) { //passes in one feature from data set
     // set up dataset
 
 // ARRAY: 2 categories, all with same keys; labels: .... values: .... 
-    var d3_dataset3 = [{"label":"English Language Leaners" + "%: ", "value":feature.properties.PercELLs}];          
+    var d3_dataset3 = [{"label":"English Language Leaners" + "%: ", "value":feature.properties.PercELLs},
+                      {"label":"English speakers" ,"value":100-(feature.properties.PercELLs)}];
      // console.log(feature);
 
     // set width and height of drawing
-    var width = $('.col-sm-4').width(), 
-        height = width, 
+    var width = $('.col-sm-3').width(), 
+        height = width*.8, 
         radius = width / 2;
 
     // set color scale and range
@@ -418,7 +421,7 @@ function updatePie3(feature) { //passes in one feature from data set
 
     // set inner and outer radius
     var arc = d3.svg.arc() // set radius for center 
-        .outerRadius(radius - 12)
+        .outerRadius(radius - 100)
         .innerRadius(50); // if not 0 this will be donut chart
 
     // set labels  change radius to change where text falls
@@ -452,7 +455,11 @@ function updatePie3(feature) { //passes in one feature from data set
     g3.append("text")  // .centroid gives centers 
         .attr("transform", function(d) { return "translate(" + labelArc.centroid(d) + ")"; }) // moves text around as needed
         .attr("dy", ".35em")
-        .text(function(d) { return d.data.label + " (" + numberWithCommas(d.data.value) + ")"; });
+        .text(function(d) { return d.data.label + " (" + (d.data.value) + ")"; });;
+// try incorporating below code to get rid of overlapping labels, or labels for values less than 5%
+        //.text(function(d) {
+        // if(d.endAngle - d.startAngle<4*Math.PI/180){return ""}
+        // return d.data.key; });
 
 };
 
@@ -468,11 +475,11 @@ leaflet_GeoJSON.addToMap;
 
 // function numberWithCommas(x) {
 //     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-// }
+//}
 // /// to remove numbers after decimal point: 
-// function numberWithoutDecimals(x) {
- //   return x.toFixed().replace(1);
-// }
+function numberWithoutDecimals(x) {
+ return x.toFixed().replace(1);
+}
 
 
 //
