@@ -83,20 +83,29 @@ function addSchoolSizeData() {
 // use jQuery get geoJSON to grab geoJson layer, parse it, then plot it on the map using the plotDataset function
 // geojson/D13Enrollment06-15_AccurateLoc.geojson
 $.getJSON( "geojson/D13_Enrollment_06-15_2.geojson", function( data ) {
-    var schools = data;
-      console.log(data);
-    // draw the dataset on the map
-    // plotDataset(dataset);
-    // //creates a dropdown in the sidebar that we can use to fire map events and update the D3 chart
-    // createDropdown(dataset);
-    // addToMap();
-
+    var dataset = data;
+    //console.log(data);
+    plotDataset(dataset);
+    createLayerForClick(dataset);
+    addToMap();
+});
 // can I use a feature collection, + array of years to create a set of markers for each year? var featureCollection = properties[2006, 2007 2009, 2010, 2011, 2012, 2013, 2014, 2015]
 // (Feature.properties.Growth\/dec*10)
-    var schoolPointToLayer = function (features, latlng) {
 
-        var growthDecline = features.properties.GrowthDecline;
-        var publicCharter = features.properties.DBN 
+function plotDataset(dataset) {
+      leaflet_geoJSON = L.geoJson(dataset, {
+      style: mapStyle,
+      onEachFeature: schoolClick
+    }).addTo(map);
+
+    // create layer controls
+    createLayerControls(); 
+}
+
+var mapStyle = function (feature, latlng) {
+
+        var growthDecline = feature.properties.GrowthDecline;
+        var publicCharter = feature.properties.DBN 
 
         console.log(growthDecline);
    
@@ -107,9 +116,10 @@ $.getJSON( "geojson/D13_Enrollment_06-15_2.geojson", function( data ) {
             fillColor: markerColor(publicCharter, growthDecline),
             fillOpacity: 0.5,
             radius: markerRadius(growthDecline)
-    });
+        });
         return schoolMarker;
     }
+
 // find top range of G/D and set if/else stuff here for radius
     function markerRadius (d) {
     return d > 600 ?  60 :
@@ -135,10 +145,12 @@ $.getJSON( "geojson/D13_Enrollment_06-15_2.geojson", function( data ) {
            d.substring(0,1) === "8" && f <= -1 ? '#d95f0e' :
            d.substring(0,1) === "1" && f >= 0 ? '#fe9929' :
                     '#ffffd4';
-}
+    };
+    return mapStyle;
+    }
 //  }
-
-    var schoolClick = function (Feature, layer) {
+    //////// POPUP WINDOW
+    var schoolClick = function (feature, layer) {
           /////// var popupText attemtps to make popup ignore 0 value properties and instead show first year with data for enrollment
 
        var enrollment = (feature.properties);
@@ -179,20 +191,35 @@ $.getJSON( "geojson/D13_Enrollment_06-15_2.geojson", function( data ) {
           '<br />';
         } else (d._2014 != 0) 
           'Enrollment 2014: ' + d._2014 + '<br />';
-        }
-      
-
-        var popupContent = '<b>' + Feature.properties.School + '</B>'
+        
+        
+        schoolPointToLayer.bindPopup('<b>' + feature.properties.School + '</B>'
             + '<b>' + enrollment + '</b>' + 
-            '<b>Enrollment 2015: </b>' + Feature.properties._2015;
+            '<b>Enrollment 2015: </b>' + feature.properties._2015);  // var popupContent = 
 
       var popupOptions = {
-        minWidth: 50,
-        maxWidth: 150, // make sure popup window doesn't get too big
-        autoPanPadding: new L.Point(5, 60) // this makes sure the popup pushes down from the top (with space) of map rather than being hidden
- 
-        layer.bindPopup(popupContent, popupOptions)
-    };
+          minWidth: 50,
+          maxWidth: 150, // make sure popup window doesn't get too big
+          autoPanPadding: new L.Point(5, 60) // this makes sure the popup pushes down from the top (with space) of map rather than being hidden
+      }
+    
+       // layer.bindPopup(popupContent, popupOptions)
+
+    SchoolSizeGeoJSON = L.geoJson(schools, {
+        pointToLayer: schoolPointToLayer,
+        onEachFeature: schoolClick
+  });
+  addTo(map);
+
+    // create layer controls
+    // createLayerControls(); 
+
+d13PolygonGeoJSON.addTo(map);
+SchoolSizeGeoJSON.addTo(map);
+}
+
+
+
         // popupText += (Feature.properties._2006) ? '' + Feature.properties._2006 : '';
         // popupText += (Feature.properties._2015) ? '' + Feature.properties._2015 : '';
         // popupText += (Feature.properties.GrowthDecline) ? '' + Feature.properties.GrowthDecline : '';
@@ -208,21 +235,10 @@ $.getJSON( "geojson/D13_Enrollment_06-15_2.geojson", function( data ) {
         // "2014: " + features.properties._2014 + "<br />" + 
         // "2015: " + features.properties._2015 + "<br />"
         //)
-        }
+        
 
-// function to plot the dataset passed to it
-// earlier error: on homework map: school building data did not show up because I'd removed the addTo(map)
-// function plotDataset(dataset) {
-    SchoolSizeGeoJSON = L.geoJson(schools, {
-        pointToLayer: schoolPointToLayer,
-        onEachFeature: schoolClick
-  });
-//addTo(map);
+  // function to plot the dataset passed to it
+  // earlier error: on homework map: school building data did not show up because I'd removed the addTo(map)
+  // function plotDataset(dataset) {
 
-    // create layer controls
-    // createLayerControls(); 
 
-d13PolygonGeoJSON.addTo(map);
-SchoolSizeGeoJSON.addTo(map);
-});
-}
